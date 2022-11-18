@@ -1,20 +1,22 @@
 package ba.unsa.etf.rpr;
 
+import java.util.EmptyStackException;
 import java.util.Stack;
 
 /**
- * Class comment
- *  */
+ * Class used for evaluating mathematical expressions.
+ * @author Taner
+ */
 public class ExpressionEvaluator {
 
-    /** Storing numerical values parsed from the expression. */
+    /** Stores numerical values parsed from the expression. */
     private Stack<Double> values;
-    /** Storing operators parsed from the expression. */
+    /** Stores operators parsed from the expression. */
     private Stack<String> operators;
 
     /**
      * Constructor without parameters.
-     * It instantiates stacks named operators and operands with empty
+     * It instantiates stacks named operators and values with empty
      * stacks.
      * */
     public ExpressionEvaluator() {
@@ -24,29 +26,31 @@ public class ExpressionEvaluator {
 
     /**
      * Parses the mathematical expression passed as a String
-     * using Dijkstra algorithm and returns the value of expression.
+     * using Dijkstra algorithm (<a href="https://algs4.cs.princeton.edu/13stacks/Evaluate.java.html">as implemented by Professor Sedgewick</a>) and returns the value of expression.
      * @param expression Mathematical expression of type String
      * to be parsed and evaluated.
      * @return Returns the evaluated value.
      *
      * */
     public Double evaluate(String expression) {
+
+        // Putting individual elements separated by spaces
         String[] arrayOfElements = expression.split(" ");
 
         // Parsing the expression, pushing if it's an operator
-        for (String arrayOfElement : arrayOfElements) {
-            if (arrayOfElement.equals("(")) ;
-            else if (arrayOfElement.equals("+")) // Addition
-                operators.push(arrayOfElement);
-            else if (arrayOfElement.equals("-")) // Subtraction
-                operators.push(arrayOfElement);
-            else if (arrayOfElement.equals("*")) // Multiplication
-                operators.push(arrayOfElement);
-            else if (arrayOfElement.equals("/")) // Division
-                operators.push(arrayOfElement);
-            else if (arrayOfElement.equals("sqrt")) // Square root
-                operators.push(arrayOfElement);
-            else if (arrayOfElement.equals(")")) {
+        for (String element : arrayOfElements) {
+            if (element.equals("(")) ;
+            else if (element.equals("+")) // Addition
+                operators.push(element);
+            else if (element.equals("-")) // Subtraction
+                operators.push(element);
+            else if (element.equals("*")) // Multiplication
+                operators.push(element);
+            else if (element.equals("/")) // Division
+                operators.push(element);
+            else if (element.equals("sqrt")) // Square root
+                operators.push(element);
+            else if (element.equals(")")) {
                 String currentOperator = operators.pop();
                 Double currentValue = values.pop();
                 switch (currentOperator) {
@@ -68,9 +72,15 @@ public class ExpressionEvaluator {
                 }
                 values.push(currentValue);
             }
-            // Parsing the expression, pushing if it's an operand
-            else
-                values.push(Double.parseDouble(arrayOfElement));
+            else {
+                try {
+                    values.push(Double.parseDouble(element));
+                } catch (NumberFormatException ex) {
+                    throw new NumberFormatException("Invalid formatting or non-numerical value passed.");
+                } catch (RuntimeException ex) {
+                    throw ex;
+                }
+            }
         }
         return (values.pop());
     }
