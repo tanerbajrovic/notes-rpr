@@ -4,8 +4,11 @@ import java.util.EmptyStackException;
 import java.util.Stack;
 
 /**
- * Class used for evaluating mathematical expressions.
- * @author Taner
+ * Allows to evaluate mathematical expressions.
+ * <br>
+ * It achieves this by using <b>Dijkstra algorithm</b> (<a href="https://algs4.cs.princeton.edu/13stacks/Evaluate.java.html">
+ * as implemented by Professor Sedgewick</a>) and returns the value of expression.
+ * @author Taner Bajrovic
  */
 public class ExpressionEvaluator {
 
@@ -25,21 +28,25 @@ public class ExpressionEvaluator {
     }
 
     /**
-     * Parses the mathematical expression passed as a String
-     * using Dijkstra algorithm (<a href="https://algs4.cs.princeton.edu/13stacks/Evaluate.java.html">as implemented by Professor Sedgewick</a>) and returns the value of expression.
+     * Parses the mathematical expression passed as a String, and returns its value.
      * @param expression Mathematical expression of type String
      * to be parsed and evaluated.
      * @return Returns the evaluated value.
-     *
+     * @throws NumberFormatException If no numerical value was passed or if spacing between
+     * values and operators is not equal to <b>one space</b>.
+     * @throws EmptyStackException If no numeraical values are entered or no operators are
+     * entered.
      * */
     public Double evaluate(String expression) {
 
         // Putting individual elements separated by spaces
         String[] arrayOfElements = expression.split(" ");
+        int numberOfParens = 0;
 
         // Parsing the expression, pushing if it's an operator
         for (String element : arrayOfElements) {
-            if (element.equals("(")) ;
+            if (element.equals("("))
+                numberOfParens = numberOfParens + 1;
             else if (element.equals("+")) // Addition
                 operators.push(element);
             else if (element.equals("-")) // Subtraction
@@ -51,6 +58,7 @@ public class ExpressionEvaluator {
             else if (element.equals("sqrt")) // Square root
                 operators.push(element);
             else if (element.equals(")")) {
+                numberOfParens = numberOfParens - 1;
                 String currentOperator = operators.pop();
                 Double currentValue = values.pop();
                 switch (currentOperator) {
@@ -82,6 +90,11 @@ public class ExpressionEvaluator {
                 }
             }
         }
+
+        // Check if there are no parens left
+        if (numberOfParens != 0)
+            throw new IllegalArgumentException("Invalid number of parentheses.");
+
         return (values.pop());
     }
 }
